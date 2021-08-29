@@ -7,15 +7,14 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-    
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
     // MemeMe Image View
     private var imageDisplayView: UIImageView = {
         let uiImageView = UIImageView()
         uiImageView.translatesAutoresizingMaskIntoConstraints = false
-        uiImageView.layer.borderWidth = 2.0
-        uiImageView.layer.borderColor = CGColor(red: 250, green: 250, blue: 250, alpha: 1.0)
-        uiImageView.backgroundColor = .systemGray
+        uiImageView.contentMode = .scaleAspectFill
+        uiImageView.clipsToBounds = true
         return uiImageView
     }()
     
@@ -23,8 +22,8 @@ class ViewController: UIViewController {
     private var memeToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
         uiToolbar.translatesAutoresizingMaskIntoConstraints = false
-        uiToolbar.layer.backgroundColor = CGColor(red: 128.0, green: 128.0, blue: 128.0, alpha: 0.5)
-        uiToolbar.backgroundColor = .cyan
+//        uiToolbar.layer.backgroundColor = CGColor(red: 128.0, green: 128.0, blue: 128.0, alpha: 0.5)
+        uiToolbar.backgroundColor = .systemOrange
         return uiToolbar
     }()
     
@@ -32,7 +31,7 @@ class ViewController: UIViewController {
         let uiButton = UIButton()
         uiButton.translatesAutoresizingMaskIntoConstraints = false
         uiButton.setTitle("Gallery", for: .normal)
-        uiButton.setTitleColor(.systemBlue, for: .normal)
+        uiButton.setTitleColor(.systemGray, for: .normal)
         uiButton.addTarget(self, action: #selector(didPressGalleryButton), for: .touchUpInside)
         return uiButton
     }()
@@ -44,10 +43,10 @@ class ViewController: UIViewController {
         memeToolbar.addSubview(memeToolbarImagePickerButton)
         
         NSLayoutConstraint.activate([
-            imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 200.0),
-            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25.0),
-            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25.0),
-            imageDisplayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -200.0),
+            imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0.0),
+            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
+            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -0.0),
+            imageDisplayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -0.0),
         ])
         
         NSLayoutConstraint.activate([
@@ -57,16 +56,30 @@ class ViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            memeToolbarImagePickerButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 30.0),
+            memeToolbarImagePickerButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
             memeToolbarImagePickerButton.leadingAnchor.constraint(equalTo: memeToolbar.leadingAnchor, constant: 25.0),
-            memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -30.0),
+            memeToolbarImagePickerButton.trailingAnchor.constraint(equalTo: memeToolbar.trailingAnchor, constant: -25.0),
+            memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0),
         ])
     }
     
     @objc func didPressGalleryButton() {
-        let pickerController = UIImagePickerController()
-        present(pickerController, animated: true, completion: nil)
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        present(imagePicker, animated: true, completion: nil)
     }
+    
+    func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo: [UIImagePickerController.InfoKey : Any]) {
+        if let image = didFinishPickingMediaWithInfo[.originalImage] as? UIImage {
+            imageDisplayView.image = image
+        }
+        dismiss(animated: true, completion: nil)
+    }
+
+    func imagePickerControllerDidCancel(_: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+
 
 }
 
