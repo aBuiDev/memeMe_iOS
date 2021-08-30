@@ -35,12 +35,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         uiButton.addTarget(self, action: #selector(didPressGalleryButton), for: .touchUpInside)
         return uiButton
     }()
+    
+    private var memeToolbarCameraButton: UIButton = {
+        let uiButton = UIButton()
+        uiButton.translatesAutoresizingMaskIntoConstraints = false
+        uiButton.setTitle("Camera", for: .normal)
+        uiButton.setTitleColor(.systemGray, for: .normal)
+        uiButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        uiButton.addTarget(self, action: #selector(didPressCameraButton), for: .touchUpInside)
+        return uiButton
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(imageDisplayView)
         view.addSubview(memeToolbar)
         memeToolbar.addSubview(memeToolbarImagePickerButton)
+        memeToolbar.addSubview(memeToolbarCameraButton)
         
         NSLayoutConstraint.activate([
             imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0.0),
@@ -58,14 +69,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         NSLayoutConstraint.activate([
             memeToolbarImagePickerButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
             memeToolbarImagePickerButton.leadingAnchor.constraint(equalTo: memeToolbar.leadingAnchor, constant: 25.0),
-            memeToolbarImagePickerButton.trailingAnchor.constraint(equalTo: memeToolbar.trailingAnchor, constant: -25.0),
             memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0),
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeToolbarCameraButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
+            memeToolbarCameraButton.trailingAnchor.constraint(equalTo: memeToolbar.trailingAnchor, constant: -25.0),
+            memeToolbarCameraButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0),
         ])
     }
     
     @objc func didPressGalleryButton() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @objc func didPressCameraButton() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .camera
         present(imagePicker, animated: true, completion: nil)
     }
     
