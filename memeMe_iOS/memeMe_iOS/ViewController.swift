@@ -7,7 +7,17 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+    
+    let topTextFieldDelegate = TopTextFieldDelegate()
+    let bottomTextFieldDelegate = BottomTextFieldDelegate()
+    
+    let memeTextAttributes: [NSAttributedString.Key: Any] = [
+        NSAttributedString.Key.strokeColor: UIColor(red: 0, green: 0, blue: 0, alpha: 1),
+        NSAttributedString.Key.foregroundColor: UIColor(red: 255, green: 255, blue: 255, alpha: 1),
+        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+        NSAttributedString.Key.strokeWidth: 5.0
+    ]
 
     // MemeMe Image View
     private var imageDisplayView: UIImageView = {
@@ -22,7 +32,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     private var memeToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
         uiToolbar.translatesAutoresizingMaskIntoConstraints = false
-//        uiToolbar.layer.backgroundColor = CGColor(red: 128.0, green: 128.0, blue: 128.0, alpha: 0.5)
         uiToolbar.backgroundColor = .systemOrange
         return uiToolbar
     }()
@@ -45,11 +54,40 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         uiButton.addTarget(self, action: #selector(didPressCameraButton), for: .touchUpInside)
         return uiButton
     }()
+    
+    // Top Text Field
+    private var topTextField: UITextField = {
+        let uiTextField = UITextField()
+        uiTextField.translatesAutoresizingMaskIntoConstraints = false
+        uiTextField.textAlignment = .center
+        uiTextField.autocapitalizationType = .allCharacters
+        uiTextField.placeholder = "Top"
+        uiTextField.isHidden = true
+        return uiTextField
+    }()
+    
+    // Bottom Text Field
+    private var bottomTextField: UITextField = {
+        let uiTextField = UITextField()
+        uiTextField.translatesAutoresizingMaskIntoConstraints = false
+        uiTextField.textAlignment = .center
+        uiTextField.autocapitalizationType = .allCharacters
+        uiTextField.placeholder = "Bottom"
+        uiTextField.isHidden = true
+        return uiTextField
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        topTextField.delegate = topTextFieldDelegate
+        bottomTextField.delegate = bottomTextFieldDelegate
+        
         view.addSubview(imageDisplayView)
+        view.addSubview(topTextField)
+        view.addSubview(bottomTextField)
         view.addSubview(memeToolbar)
+        
         memeToolbar.addSubview(memeToolbarImagePickerButton)
         memeToolbar.addSubview(memeToolbarCameraButton)
         
@@ -57,7 +95,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0.0),
             imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
             imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -0.0),
-            imageDisplayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -0.0),
+            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -0.0)
+        ])
+        
+        NSLayoutConstraint.activate([
+            topTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0),
+            topTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 150.0),
+            topTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
+            topTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10.0),
+        ])
+        
+        NSLayoutConstraint.activate([
+            bottomTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0),
+            bottomTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
+            bottomTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10.0),
+            bottomTextField.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -150.0)
         ])
         
         NSLayoutConstraint.activate([
@@ -69,13 +121,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         NSLayoutConstraint.activate([
             memeToolbarImagePickerButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
             memeToolbarImagePickerButton.leadingAnchor.constraint(equalTo: memeToolbar.leadingAnchor, constant: 25.0),
-            memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0),
+            memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0)
         ])
         
         NSLayoutConstraint.activate([
             memeToolbarCameraButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
             memeToolbarCameraButton.trailingAnchor.constraint(equalTo: memeToolbar.trailingAnchor, constant: -25.0),
-            memeToolbarCameraButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0),
+            memeToolbarCameraButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0)
         ])
     }
     
@@ -96,6 +148,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo: [UIImagePickerController.InfoKey : Any]) {
         if let image = didFinishPickingMediaWithInfo[.originalImage] as? UIImage {
             imageDisplayView.image = image
+            topTextField.isHidden = false
+            topTextField.defaultTextAttributes = memeTextAttributes
+            bottomTextField.isHidden = false
+            bottomTextField.defaultTextAttributes = memeTextAttributes
         }
         dismiss(animated: true, completion: nil)
     }
@@ -103,7 +159,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerControllerDidCancel(_: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+}
 
+class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        print(string)
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
 
+class BottomTextFieldDelegate: NSObject, UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        print(string)
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
 

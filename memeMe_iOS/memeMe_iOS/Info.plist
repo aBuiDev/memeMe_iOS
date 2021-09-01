@@ -55,6 +55,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Application needs to access the camera to allow users to take pictures, save them and use them to create their own meme.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Application needs to access the media library to allow users to select pictures and use them to create their own meme.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
