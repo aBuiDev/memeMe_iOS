@@ -83,7 +83,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
         uiTextField.autocapitalizationType = .allCharacters
         uiTextField.textAlignment = .center
-        uiTextField.placeholder = "Top Text Here..."
         uiTextField.isHidden = true
         return uiTextField
     }()
@@ -94,7 +93,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
         uiTextField.autocapitalizationType = .allCharacters
         uiTextField.textAlignment = .center
-        uiTextField.placeholder = "Bottom Text Here..."
         uiTextField.isHidden = true
         return uiTextField
     }()
@@ -122,10 +120,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         memeToolbar.items = setupToolbarItems()
 
         NSLayoutConstraint.activate([
-            imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 125.0),
-            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25.0),
-            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25.0),
-            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -30.0)
+            imageDisplayView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
+            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
+            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0),
+            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 0.0)
         ])
         
         NSLayoutConstraint.activate([
@@ -216,13 +214,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             // Re-initialised Top Text Field
             topTextField.isHidden = false
             topTextField.defaultTextAttributes = memeTextAttributes
-            topTextField.attributedText = NSAttributedString(string: "TOP TEXT", attributes: [.paragraphStyle: centerAttributedText])
+            topTextField.attributedText = NSAttributedString(string: "TOP TEXT HERE...", attributes: [.paragraphStyle: centerAttributedText])
             
             // Re-initialised Bottom Text Field
             bottomTextField.isHidden = false
             bottomTextField.defaultTextAttributes = memeTextAttributes
-            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT", attributes: [.paragraphStyle: centerAttributedText])
-            
+            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT HERE...", attributes: [.paragraphStyle: centerAttributedText])
             // Enable Save Button
             memeToolbarSaveButton.isEnabled = true
             
@@ -305,18 +302,13 @@ class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        if textField.text == "" {
-            textField.placeholder = "Top Text Here..."
-        }
         textField.textAlignment = .center
-        textField.autocorrectionType = .no
         return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.text = ""
         textField.textAlignment = .center
-        textField.autocorrectionType = .no
     }
 }
 
@@ -331,18 +323,13 @@ class BottomTextFieldDelegate: NSObject, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        if textField.text == "" {
-            textField.placeholder = "Bottom Text Here..."
-        }
         textField.textAlignment = .center
-        textField.autocorrectionType = .no
         return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.text = ""
         textField.textAlignment = .center
-        textField.autocorrectionType = .no
     }
 }
 
