@@ -13,10 +13,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let bottomTextFieldDelegate = BottomTextFieldDelegate()
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.strokeColor: UIColor(red: 0, green: 0, blue: 0, alpha: 1),
-        NSAttributedString.Key.foregroundColor: UIColor(red: 255, green: 255, blue: 255, alpha: 1),
+        NSAttributedString.Key.strokeColor: UIColor.black,
+        NSAttributedString.Key.foregroundColor: UIColor.white,
         NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedString.Key.strokeWidth: 5.0
+        NSAttributedString.Key.strokeWidth: -3.0
     ]
 
     // MemeMe Image View
@@ -56,23 +56,19 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }()
     
     // Top Text Field
-    private var topTextField: UITextField = {
+    internal var topTextField: UITextField = {
         let uiTextField = UITextField()
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
-        uiTextField.textAlignment = .center
         uiTextField.autocapitalizationType = .allCharacters
-        uiTextField.placeholder = "Top"
         uiTextField.isHidden = true
         return uiTextField
     }()
     
     // Bottom Text Field
-    private var bottomTextField: UITextField = {
+    internal var bottomTextField: UITextField = {
         let uiTextField = UITextField()
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
-        uiTextField.textAlignment = .center
         uiTextField.autocapitalizationType = .allCharacters
-        uiTextField.placeholder = "Bottom"
         uiTextField.isHidden = true
         return uiTextField
     }()
@@ -92,10 +88,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         memeToolbar.addSubview(memeToolbarCameraButton)
         
         NSLayoutConstraint.activate([
-            imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0.0),
-            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
-            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -0.0),
-            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -0.0)
+            imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 125.0),
+            imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25.0),
+            imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25.0),
+            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -50.0)
         ])
         
         NSLayoutConstraint.activate([
@@ -131,6 +127,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         ])
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        subscribeToKeyboardNotifications()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        unsubscribeToKeyboardNotifications()
+    }
+    
     @objc func didPressGalleryButton() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -147,11 +151,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo: [UIImagePickerController.InfoKey : Any]) {
         if let image = didFinishPickingMediaWithInfo[.originalImage] as? UIImage {
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.alignment = .center
             imageDisplayView.image = image
             topTextField.isHidden = false
             topTextField.defaultTextAttributes = memeTextAttributes
+            topTextField.attributedText = NSAttributedString(string: "TOP TEXT", attributes: [.paragraphStyle: paragraph])
             bottomTextField.isHidden = false
             bottomTextField.defaultTextAttributes = memeTextAttributes
+            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT", attributes: [.paragraphStyle: paragraph])
         }
         dismiss(animated: true, completion: nil)
     }
@@ -159,29 +167,71 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerControllerDidCancel(_: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+    
+    // NotificationCenter for Keyboard
+    @objc func keyboardWillShow(_ notification: Notification) {
+        view.frame.origin.y = -getKeyboardHeight(notification)
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        view.frame.origin.y = 0
+    }
+    
+    func getKeyboardHeight(_ notifcation: Notification) -> CGFloat {
+        let userInfo = notifcation.userInfo
+        let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
+        return keyboardSize.cgRectValue.height - 100
+    }
+    
+    func subscribeToKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    func unsubscribeToKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
 }
 
+
+
+// BottomTextField Delegate
 class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print(string)
         return true
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        textField.textAlignment = .center
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.text = ""
+        textField.textAlignment = .center
     }
 }
 
+
+
+// BottomTextField Delegate
 class BottomTextFieldDelegate: NSObject, UITextFieldDelegate {
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print(string)
         return true
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        textField.textAlignment = .center
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.text = ""
+        textField.textAlignment = .center
     }
 }
 
