@@ -28,38 +28,62 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return uiImageView
     }()
     
-    // MemeMe Toolbar
+    
+    
+    // MARK: MemeMe Toolbar
     private var memeToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
         uiToolbar.translatesAutoresizingMaskIntoConstraints = false
-        uiToolbar.backgroundColor = .systemOrange
+        uiToolbar.barTintColor = .systemGreen
+        uiToolbar.sizeToFit()
         return uiToolbar
     }()
     
-    private var memeToolbarImagePickerButton: UIButton = {
-        let uiButton = UIButton()
-        uiButton.translatesAutoresizingMaskIntoConstraints = false
-        uiButton.setTitle("Gallery", for: .normal)
-        uiButton.setTitleColor(.systemGray, for: .normal)
-        uiButton.addTarget(self, action: #selector(didPressGalleryButton), for: .touchUpInside)
-        return uiButton
+    private var memeToolbarImagePickerButton: UIBarButtonItem = {
+        let uiBarButtonItem = UIBarButtonItem(
+            title: "Gallery",
+            style: .plain,
+            target: self,
+            action: #selector(didPressGalleryButton)
+        )
+        uiBarButtonItem.tintColor = .white
+        uiBarButtonItem.isEnabled = true
+        return uiBarButtonItem
+    }()
+
+    private var memeToolbarSaveButton: UIBarButtonItem = {
+        let uiBarButtonItem = UIBarButtonItem(
+            title: "Save",
+            style: .plain,
+            target: self,
+            action: #selector(didPressSaveButton)
+        )
+        uiBarButtonItem.tintColor = .white
+        uiBarButtonItem.isEnabled = false
+        return uiBarButtonItem
     }()
     
-    private var memeToolbarCameraButton: UIButton = {
-        let uiButton = UIButton()
-        uiButton.translatesAutoresizingMaskIntoConstraints = false
-        uiButton.setTitle("Camera", for: .normal)
-        uiButton.setTitleColor(.systemGray, for: .normal)
-        uiButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
-        uiButton.addTarget(self, action: #selector(didPressCameraButton), for: .touchUpInside)
-        return uiButton
+    private var memeToolbarCameraButton: UIBarButtonItem = {
+        let uiBarButtonItem = UIBarButtonItem(
+            title: "Camera",
+            style: .plain,
+            target: self,
+            action: #selector(didPressCameraButton)
+        )
+        uiBarButtonItem.tintColor = .white
+        uiBarButtonItem.isEnabled = true
+        return uiBarButtonItem
     }()
     
+    private let memeToolbarFlexibleSpacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
     // Top Text Field
     internal var topTextField: UITextField = {
         let uiTextField = UITextField()
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
         uiTextField.autocapitalizationType = .allCharacters
+        uiTextField.textAlignment = .center
+        uiTextField.placeholder = "Top Text Here..."
         uiTextField.isHidden = true
         return uiTextField
     }()
@@ -69,12 +93,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let uiTextField = UITextField()
         uiTextField.translatesAutoresizingMaskIntoConstraints = false
         uiTextField.autocapitalizationType = .allCharacters
+        uiTextField.textAlignment = .center
+        uiTextField.placeholder = "Bottom Text Here..."
         uiTextField.isHidden = true
         return uiTextField
     }()
 
+    
+    
+    // MARK: Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initialise Navigation Controller
+        self.title = "MemeMe 1.0"
+        self.navigationController?.navigationBar.barTintColor = .systemPurple
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         topTextField.delegate = topTextFieldDelegate
         bottomTextField.delegate = bottomTextFieldDelegate
@@ -82,16 +117,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         view.addSubview(imageDisplayView)
         view.addSubview(topTextField)
         view.addSubview(bottomTextField)
+        
         view.addSubview(memeToolbar)
-        
-        memeToolbar.addSubview(memeToolbarImagePickerButton)
-        memeToolbar.addSubview(memeToolbarCameraButton)
-        
+        memeToolbar.items = setupToolbarItems()
+
         NSLayoutConstraint.activate([
             imageDisplayView.topAnchor.constraint(equalTo: view.topAnchor, constant: 125.0),
             imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25.0),
             imageDisplayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25.0),
-            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -50.0)
+            imageDisplayView.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -30.0)
         ])
         
         NSLayoutConstraint.activate([
@@ -113,18 +147,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             memeToolbar.heightAnchor.constraint(equalToConstant: 80.0),
             memeToolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0)
         ])
-        
-        NSLayoutConstraint.activate([
-            memeToolbarImagePickerButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
-            memeToolbarImagePickerButton.leadingAnchor.constraint(equalTo: memeToolbar.leadingAnchor, constant: 25.0),
-            memeToolbarImagePickerButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0)
-        ])
-        
-        NSLayoutConstraint.activate([
-            memeToolbarCameraButton.topAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: 20.0),
-            memeToolbarCameraButton.trailingAnchor.constraint(equalTo: memeToolbar.trailingAnchor, constant: -25.0),
-            memeToolbarCameraButton.bottomAnchor.constraint(equalTo: memeToolbar.bottomAnchor, constant: -40.0)
-        ])
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -135,11 +157,20 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         unsubscribeToKeyboardNotifications()
     }
     
+    
+    
+    // MARK: UI Toolbar Methods
     @objc func didPressGalleryButton() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.sourceType = .photoLibrary
         present(imagePicker, animated: true, completion: nil)
+    }
+    
+    @objc func didPressSaveButton() {
+        let memedImage: UIImage = generateMemedImage()
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageDisplayView.image!, memedImage: memedImage)
+        print("\(meme.topText) \(meme.bottomText) saved to storage...")
     }
     
     @objc func didPressCameraButton() {
@@ -149,17 +180,55 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         present(imagePicker, animated: true, completion: nil)
     }
     
+    func setupToolbarItems() -> [UIBarButtonItem] {
+        var uiBarButtonItems: [UIBarButtonItem] = []
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarImagePickerButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarSaveButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarCameraButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        return uiBarButtonItems
+    }
+    
+    
+
+    // MARK: Sharing
+    @objc func didPressShareButton() {
+        let savedImage = generateMemedImage()
+        let imageItems: [UIImage] = [savedImage]
+        let activityViewController = UIActivityViewController(activityItems: imageItems, applicationActivities: nil)
+        present(activityViewController, animated: true)
+    }
+    
+    
+    // MARK: Image Picker Controller
     func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo: [UIImagePickerController.InfoKey : Any]) {
         if let image = didFinishPickingMediaWithInfo[.originalImage] as? UIImage {
-            let paragraph = NSMutableParagraphStyle()
-            paragraph.alignment = .center
+            // Displaying Selected Image from Gallary in Image Display View
             imageDisplayView.image = image
+            
+            // Initialise Centering of Text using NSMutableParagraphStyle
+            let centerAttributedText = NSMutableParagraphStyle()
+            centerAttributedText.alignment = .center
+
+            // Re-initialised Top Text Field
             topTextField.isHidden = false
             topTextField.defaultTextAttributes = memeTextAttributes
-            topTextField.attributedText = NSAttributedString(string: "TOP TEXT", attributes: [.paragraphStyle: paragraph])
+            topTextField.attributedText = NSAttributedString(string: "TOP TEXT", attributes: [.paragraphStyle: centerAttributedText])
+            
+            // Re-initialised Bottom Text Field
             bottomTextField.isHidden = false
             bottomTextField.defaultTextAttributes = memeTextAttributes
-            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT", attributes: [.paragraphStyle: paragraph])
+            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT", attributes: [.paragraphStyle: centerAttributedText])
+            
+            // Enable Save Button
+            memeToolbarSaveButton.isEnabled = true
+            
+            // Enable Share Button
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(didPressShareButton))
+            self.navigationItem.leftBarButtonItem?.tintColor = .white
         }
         dismiss(animated: true, completion: nil)
     }
@@ -168,7 +237,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         dismiss(animated: true, completion: nil)
     }
     
-    // NotificationCenter for Keyboard
+    
+    
+    // MARK: NotificationCenter for Keyboard
     @objc func keyboardWillShow(_ notification: Notification) {
         view.frame.origin.y = -getKeyboardHeight(notification)
     }
@@ -191,10 +262,40 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func unsubscribeToKeyboardNotifications() {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
     }
+    
+    
+    
+    // MARK: Saving Meme
+    struct Meme {
+        var topText: String
+        var bottomText: String
+        var originalImage: UIImage
+        var memedImage: UIImage
+    }
+    
+    func generateMemedImage() -> UIImage {
+
+        // Hide Toolbar
+        memeToolbar.isHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    
+        // Render view to an image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
+        let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        // Unhide Toobar
+        memeToolbar.isHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
+
+        return memedImage
+    }
 }
 
 
 
+// MARK: Text Field Delegates
 // BottomTextField Delegate
 class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
     
@@ -204,13 +305,18 @@ class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if textField.text == "" {
+            textField.placeholder = "Top Text Here..."
+        }
         textField.textAlignment = .center
+        textField.autocorrectionType = .no
         return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.text = ""
         textField.textAlignment = .center
+        textField.autocorrectionType = .no
     }
 }
 
@@ -225,13 +331,18 @@ class BottomTextFieldDelegate: NSObject, UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if textField.text == "" {
+            textField.placeholder = "Bottom Text Here..."
+        }
         textField.textAlignment = .center
+        textField.autocorrectionType = .no
         return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.text = ""
         textField.textAlignment = .center
+        textField.autocorrectionType = .no
     }
 }
 
