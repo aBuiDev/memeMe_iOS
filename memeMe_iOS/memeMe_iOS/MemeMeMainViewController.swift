@@ -63,6 +63,15 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         return uiBarButtonItem
     }()
     
+    private var memeNavigationShareButton: UIButton = {
+        let uiButton = UIButton()
+        uiButton.setImage(.actions, for: .normal)
+        uiButton.sizeToFit()
+        uiButton.tintColor = .systemGreen
+        uiButton.isEnabled = false
+        return uiButton
+    }()
+    
     private var memeToolbarCameraButton: UIBarButtonItem = {
         let uiBarButtonItem = UIBarButtonItem(
             title: "Camera",
@@ -131,7 +140,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         
         NSLayoutConstraint.activate([
             topTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0),
-            topTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 150.0),
+            topTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25.0),
             topTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
             topTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10.0),
         ])
@@ -140,12 +149,12 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             bottomTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0),
             bottomTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
             bottomTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10.0),
-            bottomTextField.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -150.0)
+            bottomTextField.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -25.0)
         ])
         
         NSLayoutConstraint.activate([
             memeToolbar.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0.0),
-            memeToolbar.heightAnchor.constraint(equalToConstant: 80.0),
+            memeToolbar.heightAnchor.constraint(equalToConstant: 50.0),
             memeToolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0)
         ])
     }
@@ -233,8 +242,8 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             memeToolbarSaveButton.isEnabled = true
             
             // Enable Share Button
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(didPressShareButton))
-            self.navigationItem.leftBarButtonItem?.tintColor = .white
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: memeNavigationShareButton)
+            memeNavigationShareButton.addTarget(self, action: #selector(didPressShareButton), for: .touchUpInside)
         }
         dismiss(animated: true, completion: nil)
     }
@@ -259,7 +268,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     func getKeyboardHeight(_ notifcation: Notification) -> CGFloat {
         let userInfo = notifcation.userInfo
         let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
-        return keyboardSize.cgRectValue.height - 100
+        return keyboardSize.cgRectValue.height
     }
     
     func subscribeToKeyboardNotifications() {
