@@ -13,10 +13,10 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     let bottomTextFieldDelegate = MemeMeTextFieldDelegate()
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.strokeColor: UIColor.black,
-        NSAttributedString.Key.foregroundColor: UIColor.white,
-        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedString.Key.strokeWidth: -3.0
+        .strokeColor: UIColor.black,
+        .foregroundColor: UIColor.white,
+        .font: UIFont(name: "HelveticaNeue-CondensedBlack", size:40)!,
+        .strokeWidth: -3.0
     ]
 
     // MemeMe Image View
@@ -87,25 +87,26 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     private let memeToolbarFlexibleSpacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
-    // Top Text Field
-    internal var topTextField: UITextField = {
-        let uiTextField = UITextField()
-        uiTextField.translatesAutoresizingMaskIntoConstraints = false
-        uiTextField.autocapitalizationType = .allCharacters
-        uiTextField.textAlignment = .center
-        uiTextField.isHidden = true
-        return uiTextField
+    
+    
+    
+    // MARK: Text Fields
+    internal lazy var topTextField: UITextField = {
+        generateTextField()
     }()
     
-    // Bottom Text Field
-    internal var bottomTextField: UITextField = {
-        let uiTextField = UITextField()
-        uiTextField.translatesAutoresizingMaskIntoConstraints = false
-        uiTextField.autocapitalizationType = .allCharacters
-        uiTextField.textAlignment = .center
-        uiTextField.isHidden = true
-        return uiTextField
+    internal lazy var bottomTextField: UITextField = {
+        generateTextField()
     }()
+    
+    private func generateTextField() -> UITextField {
+        let uiTextField = UITextField()
+            uiTextField.translatesAutoresizingMaskIntoConstraints = false
+            uiTextField.autocapitalizationType = .allCharacters
+            uiTextField.textAlignment = .center
+            uiTextField.isHidden = true
+        return uiTextField
+    }
 
     
 
@@ -230,14 +231,11 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             centerAttributedText.alignment = .center
 
             // Re-initialised Top Text Field
-            topTextField.isHidden = false
-            topTextField.defaultTextAttributes = memeTextAttributes
-            topTextField.attributedText = NSAttributedString(string: "TOP TEXT HERE...", attributes: [.paragraphStyle: centerAttributedText])
+            updateMemeMeTextFields(topTextField, "TOP TEXT HERE...", centerAttributedText)
             
             // Re-initialised Bottom Text Field
-            bottomTextField.isHidden = false
-            bottomTextField.defaultTextAttributes = memeTextAttributes
-            bottomTextField.attributedText = NSAttributedString(string: "BOTTOM TEXT HERE...", attributes: [.paragraphStyle: centerAttributedText])
+            updateMemeMeTextFields(bottomTextField, "BOTTOM TEXT HERE...", centerAttributedText)
+            
             // Enable Save Button
             memeToolbarSaveButton.isEnabled = true
             
@@ -246,6 +244,12 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             memeNavigationShareButton.addTarget(self, action: #selector(didPressShareButton), for: .touchUpInside)
         }
         dismiss(animated: true, completion: nil)
+    }
+    
+    func updateMemeMeTextFields(_ uiTextField: UITextField, _ placeHolderString: String, _ centerAttributedText: NSMutableParagraphStyle) {
+        uiTextField.isHidden = false
+        uiTextField.defaultTextAttributes = memeTextAttributes
+        uiTextField.attributedText = NSAttributedString(string: placeHolderString, attributes: [.paragraphStyle: centerAttributedText])
     }
 
     func imagePickerControllerDidCancel(_: UIImagePickerController) {
