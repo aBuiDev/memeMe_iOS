@@ -7,10 +7,10 @@
 
 import UIKit
 
-class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
     
-    let topTextFieldDelegate = TopTextFieldDelegate()
-    let bottomTextFieldDelegate = BottomTextFieldDelegate()
+    let topTextFieldDelegate = MemeMeTextFieldDelegate()
+    let bottomTextFieldDelegate = MemeMeTextFieldDelegate()
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
@@ -23,7 +23,7 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
     private var imageDisplayView: UIImageView = {
         let uiImageView = UIImageView()
         uiImageView.translatesAutoresizingMaskIntoConstraints = false
-        uiImageView.contentMode = .scaleAspectFill
+        uiImageView.contentMode = .scaleAspectFit
         uiImageView.clipsToBounds = true
         return uiImageView
     }()
@@ -39,12 +39,12 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
         return uiToolbar
     }()
     
-    private var memeToolbarImagePickerButton: UIBarButtonItem = {
+    private lazy var memeToolbarImagePickerButton: UIBarButtonItem = {
         let uiBarButtonItem = UIBarButtonItem(
             title: "Gallery",
             style: .plain,
             target: self,
-            action: #selector(didPressGalleryButton)
+            action: #selector(didSelectImagePickerButton(_ :))
         )
         uiBarButtonItem.tintColor = .white
         uiBarButtonItem.isEnabled = true
@@ -68,10 +68,11 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
             title: "Camera",
             style: .plain,
             target: self,
-            action: #selector(didPressCameraButton)
+            action: #selector(didSelectImagePickerButton(_ :))
         )
         uiBarButtonItem.tintColor = .white
         uiBarButtonItem.isEnabled = true
+        uiBarButtonItem.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         return uiBarButtonItem
     }()
     
@@ -98,7 +99,7 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
     }()
 
     
-    
+
     // MARK: Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,6 +112,8 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
         
         topTextField.delegate = topTextFieldDelegate
         bottomTextField.delegate = bottomTextFieldDelegate
+        
+        view.backgroundColor = .black
         
         view.addSubview(imageDisplayView)
         view.addSubview(topTextField)
@@ -158,23 +161,22 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
     
     
     // MARK: UI Toolbar Methods
-    @objc func didPressGalleryButton() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-        present(imagePicker, animated: true, completion: nil)
-    }
-    
     @objc func didPressSaveButton() {
         let memedImage: UIImage = generateMemedImage()
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageDisplayView.image!, memedImage: memedImage)
         print("\(meme.topText) \(meme.bottomText) saved to storage...")
     }
     
-    @objc func didPressCameraButton() {
+    @objc func didSelectImagePickerButton(_ sender: UIBarButtonItem) {
+        guard let buttonTitle = sender.title else { return }
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.sourceType = .camera
+        if buttonTitle == "Gallery" {
+            imagePicker.sourceType = .photoLibrary
+        }
+        if buttonTitle == "Camera" {
+            imagePicker.sourceType = .camera
+        }
         present(imagePicker, animated: true, completion: nil)
     }
     
@@ -197,9 +199,16 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
         let savedImage = generateMemedImage()
         let imageItems: [UIImage] = [savedImage]
         let activityViewController = UIActivityViewController(activityItems: imageItems, applicationActivities: nil)
-        present(activityViewController, animated: true)
+        self.present(activityViewController, animated: true)
+        activityViewController.completionWithItemsHandler = {(activity, completed, items, error) in
+            if (completed) {
+                self.didPressSaveButton()
+                self.dismiss(animated:true,completion:nil)
+            }
+        }
     }
     
+
     
     // MARK: Image Picker Controller
     func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo: [UIImagePickerController.InfoKey : Any]) {
@@ -238,7 +247,9 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
     
     // MARK: NotificationCenter for Keyboard
     @objc func keyboardWillShow(_ notification: Notification) {
-        view.frame.origin.y = -getKeyboardHeight(notification)
+        if bottomTextField.isFirstResponder {
+            view.frame.origin.y = -getKeyboardHeight(notification)
+        }
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
@@ -262,14 +273,7 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
     
     
     
-    // MARK: Saving Meme
-    struct Meme {
-        var topText: String
-        var bottomText: String
-        var originalImage: UIImage
-        var memedImage: UIImage
-    }
-    
+    // MARK: Saving Meme    
     func generateMemedImage() -> UIImage {
 
         // Hide Toolbar
@@ -293,29 +297,7 @@ class MemeMainViewController: UIViewController, UIImagePickerControllerDelegate,
 
 
 // MARK: Text Field Delegates
-// BottomTextField Delegate
-class TopTextFieldDelegate: NSObject, UITextFieldDelegate {
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return true
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        textField.textAlignment = .center
-        return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.text = ""
-        textField.textAlignment = .center
-    }
-}
-
-
-
-// BottomTextField Delegate
-class BottomTextFieldDelegate: NSObject, UITextFieldDelegate {
+class MemeMeTextFieldDelegate: NSObject, UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true

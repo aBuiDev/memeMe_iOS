@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         window?.makeKeyAndVisible()
 
-        let viewController = MemeMainViewController()
+        let viewController = MemeMeMainViewController()
         let navigationViewController = UINavigationController(rootViewController: viewController)
         window?.rootViewController = navigationViewController
     }
