@@ -16,9 +16,17 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate 
         return appDelegate.memes
     }
     
+    private var createMemeButton: UIBarButtonItem = {
+        let uiBarButtonItem = UIBarButtonItem()
+        uiBarButtonItem.image = UIImage(systemName: "plus.square")
+        return uiBarButtonItem
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Table Gallery"
         view.backgroundColor = .systemBlue
+        
+        navigationItem.rightBarButtonItem = createMemeButton
     }
 }

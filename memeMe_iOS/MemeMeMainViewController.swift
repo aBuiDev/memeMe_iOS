@@ -30,6 +30,17 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     
     
+    // MARK: MemeMe Top Toolbar
+    private var memeTopToolbar: UIToolbar = {
+        let uiToolbar = UIToolbar()
+        uiToolbar.translatesAutoresizingMaskIntoConstraints = false
+        uiToolbar.barTintColor = .systemGreen
+        uiToolbar.sizeToFit()
+        return uiToolbar
+    }()
+    
+    
+    
     // MARK: MemeMe Toolbar
     private var memeToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
@@ -114,23 +125,24 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Initialise Navigation Controller
-        self.title = "MemeMe 1.0"
-        self.navigationController?.navigationBar.barTintColor = .systemPurple
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        
         topTextField.delegate = topTextFieldDelegate
         bottomTextField.delegate = bottomTextFieldDelegate
         
         view.backgroundColor = .black
         
+        view.addSubview(memeTopToolbar)
         view.addSubview(imageDisplayView)
         view.addSubview(topTextField)
         view.addSubview(bottomTextField)
         
         view.addSubview(memeToolbar)
         memeToolbar.items = setupToolbarItems()
+        
+        NSLayoutConstraint.activate([
+            memeTopToolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
+            memeTopToolbar.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0.0),
+            memeTopToolbar.heightAnchor.constraint(equalToConstant: 50.0)
+        ])
 
         NSLayoutConstraint.activate([
             imageDisplayView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
