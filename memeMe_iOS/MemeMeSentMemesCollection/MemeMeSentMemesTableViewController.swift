@@ -1,5 +1,5 @@
 //
-//  MemeMeCollectionGalleryViewController.swift
+//  MemeMeSentMemesTableViewController.swift
 //  memeMe_iOS
 //
 //  Created by Andrew Bui on 11/9/21.
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionViewDelegate {
+class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate {
     
     var memes: [Meme]! {
         let object = UIApplication.shared.delegate
@@ -18,9 +18,7 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Collection Gallery"
-        view.backgroundColor = .systemRed
+        title = "Table Gallery"
+        view.backgroundColor = .systemBlue
     }
 }
-
-
