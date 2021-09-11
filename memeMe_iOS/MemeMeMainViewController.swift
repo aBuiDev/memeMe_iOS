@@ -174,6 +174,12 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     @objc func didPressSaveButton() {
         let memedImage: UIImage = generateMemedImage()
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageDisplayView.image!, memedImage: memedImage)
+
+        // Add it to the memes array in the Application Delegate
+        let object = UIApplication.shared.delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
+        
         print("\(meme.topText) \(meme.bottomText) saved to storage...")
     }
     
