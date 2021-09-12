@@ -32,14 +32,15 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         
         let uiCollectionViewFlowLayout = UICollectionViewFlowLayout()
         uiCollectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        uiCollectionViewFlowLayout.itemSize = CGSize(width: 120, height: 120)
+        uiCollectionViewFlowLayout.itemSize = CGSize(width: 125, height: 175)
         
         let uiCollectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: uiCollectionViewFlowLayout
         )
     
-        uiCollectionView.backgroundColor = .systemRed
+        uiCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        uiCollectionView.backgroundColor = .black
         return uiCollectionView
     }()
     
@@ -50,7 +51,6 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         
         memeMeCollectionView.delegate = self
         memeMeCollectionView.dataSource = self
-        memeMeCollectionView.frame = self.view.frame
         memeMeCollectionView.register(MemeCollectionViewCell.self, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
         
         title = "Collection Gallery"
@@ -81,14 +81,19 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
 
 extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return allVillains.count
+        return memes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: forCellWithReuseIdentifier, for: indexPath) as! MemeCollectionViewCell
-        let villain = self.allVillains[(indexPath as NSIndexPath).row]
-        myCell.nameLabel.text = villain.name
-        myCell.backgroundColor = UIColor.blue
+        let meme = self.memes[(indexPath as NSIndexPath).row]
+
+        myCell.topMemeText.text = meme.topText
+        myCell.bottomMemeText.text = meme.bottomText
+        myCell.memeImage.image = meme.originalImage
+        
+        myCell.backgroundColor = .white
+
         return myCell
     }
     
@@ -96,6 +101,8 @@ extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
         print("Hello World")
     }
 }
+
+
 
 class MemeCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
@@ -107,18 +114,54 @@ class MemeCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let nameLabel: UILabel = {
+    let topMemeText: UILabel = {
         let uiLabel = UILabel()
         uiLabel.translatesAutoresizingMaskIntoConstraints = false
-        uiLabel.text = "Hello World"
+        uiLabel.textAlignment = .center
+        uiLabel.numberOfLines = 0
         return uiLabel
     }()
     
+    let bottomMemeText: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.textAlignment = .center
+        uiLabel.numberOfLines = 0
+        return uiLabel
+    }()
+    
+    var memeImage: UIImageView = {
+        let uiImage = UIImageView()
+        uiImage.translatesAutoresizingMaskIntoConstraints = false
+        uiImage.contentMode = .scaleAspectFill
+        uiImage.clipsToBounds = true
+        return uiImage
+    }()
+    
     func setupViews() {
-        addSubview(nameLabel)
+        addSubview(topMemeText)
+        addSubview(memeImage)
+        addSubview(bottomMemeText)
+
+        // Top Meme Text Constraints
         NSLayoutConstraint.activate([
-            nameLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            nameLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            topMemeText.topAnchor.constraint(equalTo: self.topAnchor),
+            topMemeText.heightAnchor.constraint(equalToConstant: 25.0),
+            topMemeText.widthAnchor.constraint(equalTo: self.widthAnchor)
+        ])
+        
+        // Image Constraints
+        NSLayoutConstraint.activate([
+            memeImage.topAnchor.constraint(equalTo: topMemeText.bottomAnchor),
+            memeImage.widthAnchor.constraint(equalTo: self.widthAnchor),
+            memeImage.bottomAnchor.constraint(equalTo: bottomMemeText.topAnchor),
+        ])
+        
+        // Bottom Meme Text Constraints
+        NSLayoutConstraint.activate([
+            bottomMemeText.heightAnchor.constraint(equalToConstant: 25.0),
+            bottomMemeText.widthAnchor.constraint(equalTo: self.widthAnchor),
+            bottomMemeText.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
     }
     
