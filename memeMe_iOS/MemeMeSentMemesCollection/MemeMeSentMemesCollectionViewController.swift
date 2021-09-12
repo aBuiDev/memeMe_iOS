@@ -10,7 +10,7 @@ import UIKit
 
 class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionViewDelegate {
     
-    var count: Int = 0
+    let allVillains = Villain.allVillains
     
     var memes: [Meme]! {
         let object = UIApplication.shared.delegate
@@ -51,7 +51,7 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         memeMeCollectionView.delegate = self
         memeMeCollectionView.dataSource = self
         memeMeCollectionView.frame = self.view.frame
-        memeMeCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
+        memeMeCollectionView.register(MemeCollectionViewCell.self, forCellWithReuseIdentifier: forCellWithReuseIdentifier)
         
         title = "Collection Gallery"
         view.backgroundColor = .black
@@ -81,11 +81,13 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
 
 extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return allVillains.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: forCellWithReuseIdentifier, for: indexPath)
+        let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: forCellWithReuseIdentifier, for: indexPath) as! MemeCollectionViewCell
+        let villain = self.allVillains[(indexPath as NSIndexPath).row]
+        myCell.nameLabel.text = villain.name
         myCell.backgroundColor = UIColor.blue
         return myCell
     }
@@ -95,4 +97,30 @@ extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
     }
 }
 
+class MemeCollectionViewCell: UICollectionViewCell {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    let nameLabel: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.text = "Hello World"
+        return uiLabel
+    }()
+    
+    func setupViews() {
+        addSubview(nameLabel)
+        NSLayoutConstraint.activate([
+            nameLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            nameLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+        ])
+    }
+    
+}
 
