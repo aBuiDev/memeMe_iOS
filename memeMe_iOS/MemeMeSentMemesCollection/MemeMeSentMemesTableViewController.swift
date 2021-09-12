@@ -16,17 +16,29 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate 
         return appDelegate.memes
     }
     
-    private var createMemeButton: UIBarButtonItem = {
-        let uiBarButtonItem = UIBarButtonItem()
-        uiBarButtonItem.image = UIImage(systemName: "plus.square")
+    lazy var createMemeButton: UIBarButtonItem = {
+        let uiBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "plus.square"),
+            style: .plain,
+            target: self,
+            action: #selector(didPressCreateMemeButton(_:))
+        )
         return uiBarButtonItem
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Table Gallery"
-        view.backgroundColor = .systemBlue
+        view.backgroundColor = .black
         
         navigationItem.rightBarButtonItem = createMemeButton
+        navigationItem.rightBarButtonItem?.tintColor = .white
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
+    }
+    
+    @objc func didPressCreateMemeButton(_ sender: UIBarButtonItem) {
+        let memeMeMainViewController = MemeMeMainViewController()
+        navigationController?.present(memeMeMainViewController, animated: true, completion: nil)
     }
 }

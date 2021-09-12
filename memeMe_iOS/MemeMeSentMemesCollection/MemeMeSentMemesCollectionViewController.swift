@@ -29,9 +29,12 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Collection Gallery"
-        view.backgroundColor = .systemRed
+        view.backgroundColor = .black
         
         navigationItem.rightBarButtonItem = createMemeButton
+        navigationItem.rightBarButtonItem?.tintColor = .white
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
     }
     
     @objc func didPressCreateMemeButton(_ sender: UIBarButtonItem) {

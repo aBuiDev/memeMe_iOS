@@ -34,7 +34,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     private var memeTopToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
         uiToolbar.translatesAutoresizingMaskIntoConstraints = false
-        uiToolbar.barTintColor = .systemGreen
+        uiToolbar.barTintColor = .black
         uiToolbar.sizeToFit()
         return uiToolbar
     }()
@@ -71,7 +71,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     private var memeToolbar: UIToolbar = {
         let uiToolbar = UIToolbar()
         uiToolbar.translatesAutoresizingMaskIntoConstraints = false
-        uiToolbar.barTintColor = .systemGreen
+        uiToolbar.barTintColor = .black
         uiToolbar.sizeToFit()
         return uiToolbar
     }()

@@ -14,6 +14,9 @@ class MemeMeSentMemesViewController: UIViewController {
         view.backgroundColor = .systemPurple
         let tabBarViewController = UITabBarController()
         
+        tabBarViewController.tabBar.barTintColor = .black
+        tabBarViewController.tabBar.tintColor = .white
+        
         let memeMeSentMemesCollectionViewController = UINavigationController(rootViewController: MemeMeSentMemesCollectionViewController())
         memeMeSentMemesCollectionViewController.title = "Collection Gallery"
         let memeMeSentMemesTableViewController = UINavigationController(rootViewController: MemeMeSentMemesTableViewController())
