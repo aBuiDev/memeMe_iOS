@@ -366,18 +366,18 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     func generateMemedImage() -> UIImage {
 
         // Hide Toolbar
+        memeTopToolbar.isHidden = true
         memeToolbar.isHidden = true
-        navigationController?.setNavigationBarHidden(true, animated: false)
     
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
-        let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
 
         // Unhide Toobar
+        memeTopToolbar.isHidden = false
         memeToolbar.isHidden = false
-        navigationController?.setNavigationBarHidden(false, animated: false)
 
         return memedImage
     }

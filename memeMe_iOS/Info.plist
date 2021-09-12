@@ -20,6 +20,12 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Application needs to access the media library to allow users to select pictures and use them to create their own meme.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Application needs to access the camera to allow users to take pictures, save them and use them to create their own meme.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Application needs to access the photo library to allow users to select pictures and user them to create their own meme as well as share these images by saving them into the photolibrary.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -43,8 +49,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -55,12 +59,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Application needs to access the camera to allow users to take pictures, save them and use them to create their own meme.</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Application needs to access the media library to allow users to select pictures and use them to create their own meme.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Application needs to access the photo library to allow users to select pictures and user them to create their own meme as well as share these images by saving them into the photolibrary.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
