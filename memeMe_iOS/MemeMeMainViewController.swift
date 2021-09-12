@@ -39,6 +39,32 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         return uiToolbar
     }()
     
+    private var memeCreateTopToolbarCancelButton: UIButton = {
+        let uiButton = UIButton()
+        uiButton.translatesAutoresizingMaskIntoConstraints = false
+        uiButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        uiButton.tintColor = .white
+        uiButton.addTarget(self, action: #selector(didPressCancelCreateMemeButton), for: .touchUpInside)
+        return uiButton
+    }()
+    
+    private var memeCreateTopToolbarShareButton: UIButton = {
+        let uiButton = UIButton()
+        uiButton.translatesAutoresizingMaskIntoConstraints = false
+        uiButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
+        uiButton.tintColor = .white
+        uiButton.isEnabled = false
+        return uiButton
+    }()
+    
+    private var memeMeCreateTitleLabel: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.text = "Create Meme"
+        uiLabel.textColor = .white
+        return uiLabel
+    }()
+    
     
     
     // MARK: MemeMe Toolbar
@@ -52,7 +78,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     private lazy var memeToolbarImagePickerButton: UIBarButtonItem = {
         let uiBarButtonItem = UIBarButtonItem(
-            title: "Gallery",
+            image: UIImage(systemName: "photo.on.rectangle"),
             style: .plain,
             target: self,
             action: #selector(didSelectImagePickerButton(_ :))
@@ -74,18 +100,9 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         return uiBarButtonItem
     }()
     
-    private var memeNavigationShareButton: UIButton = {
-        let uiButton = UIButton()
-        uiButton.setImage(.actions, for: .normal)
-        uiButton.sizeToFit()
-        uiButton.tintColor = .systemGreen
-        uiButton.isEnabled = false
-        return uiButton
-    }()
-    
     private var memeToolbarCameraButton: UIBarButtonItem = {
         let uiBarButtonItem = UIBarButtonItem(
-            title: "Camera",
+            image: UIImage(systemName: "camera"),
             style: .plain,
             target: self,
             action: #selector(didSelectImagePickerButton(_ :))
@@ -125,25 +142,50 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Delegates
         topTextField.delegate = topTextFieldDelegate
         bottomTextField.delegate = bottomTextFieldDelegate
         
         view.backgroundColor = .black
         
-        view.addSubview(memeTopToolbar)
+        // Body
         view.addSubview(imageDisplayView)
         view.addSubview(topTextField)
         view.addSubview(bottomTextField)
         
+        // Top Toolbar
+        view.addSubview(memeTopToolbar)
+        memeTopToolbar.addSubview(memeCreateTopToolbarShareButton)
+        memeTopToolbar.addSubview(memeMeCreateTitleLabel)
+        memeTopToolbar.addSubview(memeCreateTopToolbarCancelButton)
+        
+        // Bottom Toolbar
         view.addSubview(memeToolbar)
         memeToolbar.items = setupToolbarItems()
         
+        // Constraints: Top Toolbar
         NSLayoutConstraint.activate([
             memeTopToolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
             memeTopToolbar.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0.0),
             memeTopToolbar.heightAnchor.constraint(equalToConstant: 50.0)
         ])
-
+        
+        NSLayoutConstraint.activate([
+            memeCreateTopToolbarShareButton.centerYAnchor.constraint(equalTo: memeTopToolbar.centerYAnchor),
+            memeCreateTopToolbarShareButton.leadingAnchor.constraint(equalTo: memeTopToolbar.leadingAnchor, constant: 25.0),
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeMeCreateTitleLabel.centerYAnchor.constraint(equalTo: memeTopToolbar.centerYAnchor),
+            memeMeCreateTitleLabel.centerXAnchor.constraint(equalTo: memeTopToolbar.centerXAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeCreateTopToolbarCancelButton.centerYAnchor.constraint(equalTo: memeTopToolbar.centerYAnchor),
+            memeCreateTopToolbarCancelButton.trailingAnchor.constraint(equalTo: memeTopToolbar.trailingAnchor, constant: -25.0),
+        ])
+        
+        // Constraints: Body
         NSLayoutConstraint.activate([
             imageDisplayView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
             imageDisplayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
@@ -153,7 +195,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         
         NSLayoutConstraint.activate([
             topTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 30.0),
-            topTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25.0),
+            topTextField.topAnchor.constraint(equalTo: memeTopToolbar.bottomAnchor, constant: 25.0),
             topTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10.0),
             topTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10.0),
         ])
@@ -165,6 +207,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             bottomTextField.bottomAnchor.constraint(equalTo: memeToolbar.topAnchor, constant: -25.0)
         ])
         
+        // Constraints Bottom Toolbar
         NSLayoutConstraint.activate([
             memeToolbar.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 0.0),
             memeToolbar.heightAnchor.constraint(equalToConstant: 50.0),
@@ -178,6 +221,21 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     override func viewWillDisappear(_ animated: Bool) {
         unsubscribeToKeyboardNotifications()
+    }
+    
+    
+    
+    // MARK: UI Top Toolbar Methods
+    func setupTopToolbarItems() -> [UIBarButtonItem] {
+        var uiBarButtonItems: [UIBarButtonItem] = []
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarImagePickerButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarSaveButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        uiBarButtonItems.append(memeToolbarCameraButton)
+        uiBarButtonItems.append(memeToolbarFlexibleSpacer)
+        return uiBarButtonItems
     }
     
     
@@ -196,13 +254,13 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     @objc func didSelectImagePickerButton(_ sender: UIBarButtonItem) {
-        guard let buttonTitle = sender.title else { return }
+        guard let buttonImage = sender.image else { return }
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        if buttonTitle == "Gallery" {
+        if buttonImage == UIImage(systemName: "photo.on.rectangle") {
             imagePicker.sourceType = .photoLibrary
         }
-        if buttonTitle == "Camera" {
+        if buttonImage == UIImage(systemName: "camera") {
             imagePicker.sourceType = .camera
         }
         present(imagePicker, animated: true, completion: nil)
@@ -258,8 +316,8 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
             memeToolbarSaveButton.isEnabled = true
             
             // Enable Share Button
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: memeNavigationShareButton)
-            memeNavigationShareButton.addTarget(self, action: #selector(didPressShareButton), for: .touchUpInside)
+            memeCreateTopToolbarShareButton.isEnabled = true
+            memeCreateTopToolbarShareButton.addTarget(self, action: #selector(didPressShareButton), for: .touchUpInside)
         }
         dismiss(animated: true, completion: nil)
     }
@@ -322,6 +380,11 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         navigationController?.setNavigationBarHidden(false, animated: false)
 
         return memedImage
+    }
+    
+    // MARK: Cancelling Meme Creation
+    @objc func didPressCancelCreateMemeButton() {
+        dismiss(animated: true, completion: nil)
     }
 }
 
