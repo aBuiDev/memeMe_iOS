@@ -11,7 +11,6 @@ import UIKit
 class MemeMeSentMemesViewController: UIViewController {
     
     override func viewDidLoad() {
-        view.backgroundColor = .systemPurple
         let tabBarViewController = UITabBarController()
         
         tabBarViewController.tabBar.barTintColor = .black

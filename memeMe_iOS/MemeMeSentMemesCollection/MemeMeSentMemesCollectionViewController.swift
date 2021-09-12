@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionViewDelegate {
+class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    let allVillains = Villain.allVillains
+    private var forCellWithReuseIdentifier = "memeCollectionCell"
     
     var memes: [Meme]! {
         let object = UIApplication.shared.delegate
@@ -44,10 +44,17 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         return uiCollectionView
     }()
     
-    private var forCellWithReuseIdentifier = "memeCollectionCell"
     
+    // MARK: viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupViews()
+    }
+    
+    
+    
+    // MARK: SetupViews
+    func setupViews() {
         
         memeMeCollectionView.delegate = self
         memeMeCollectionView.dataSource = self
@@ -73,13 +80,17 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         ])
     }
     
+    
+    
+    // MARK: Functions
     @objc func didPressCreateMemeButton(_ sender: UIBarButtonItem) {
         let memeMeMainViewController = MemeMeMainViewController()
         navigationController?.present(memeMeMainViewController, animated: true, completion: nil)
     }
-}
-
-extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
+    
+    
+    
+    // MARK: CollectionViewDelegates
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return memes.count
     }
@@ -98,12 +109,14 @@ extension MemeMeSentMemesCollectionViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Hello World")
+        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController()
+        self.navigationController?.present(memeMeMemeDetailsViewController, animated: true, completion: nil)
     }
 }
 
 
 
+// MARK: MemeCollectionViewCell
 class MemeCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)

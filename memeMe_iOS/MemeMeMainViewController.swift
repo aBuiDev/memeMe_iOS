@@ -283,13 +283,14 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     // MARK: Sharing
     @objc func didPressShareButton() {
         let savedImage = generateMemedImage()
+        let memeMeSentMemesCollectionViewController = MemeMeSentMemesCollectionViewController()
         let imageItems: [UIImage] = [savedImage]
         let activityViewController = UIActivityViewController(activityItems: imageItems, applicationActivities: nil)
         self.present(activityViewController, animated: true)
         activityViewController.completionWithItemsHandler = {(activity, completed, items, error) in
             if (completed) {
                 self.didPressSaveButton()
-                self.dismiss(animated:true,completion:nil)
+                self.dismiss(animated: true, completion: memeMeSentMemesCollectionViewController.setupViews)
             }
         }
     }
@@ -384,7 +385,8 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     // MARK: Cancelling Meme Creation
     @objc func didPressCancelCreateMemeButton() {
-        dismiss(animated: true, completion: nil)
+        let memeMeSentMemesCollectionViewController = MemeMeSentMemesViewController()
+        dismiss(animated: true, completion: memeMeSentMemesCollectionViewController.viewDidLoad)
     }
 }
 
