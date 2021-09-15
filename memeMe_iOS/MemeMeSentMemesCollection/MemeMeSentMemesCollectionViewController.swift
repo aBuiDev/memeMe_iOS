@@ -71,7 +71,7 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
         // Collection Gallery
         view.addSubview(memeMeCollectionView)
         
-        // Collection Gallary Constraints
+        // Collection Gallery Constraints
         NSLayoutConstraint.activate([
             memeMeCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
             memeMeCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),

@@ -8,7 +8,9 @@
 import Foundation
 import UIKit
 
-class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate {
+class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+    private var forCellWithReuseIdentifier = "memeTableCell"
     
     var memes: [Meme]! {
         let object = UIApplication.shared.delegate
@@ -26,19 +28,114 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate 
         return uiBarButtonItem
     }()
     
+    private var memeMeTableView: UITableView = {
+        let uiTableView = UITableView(frame: .zero)
+        uiTableView.translatesAutoresizingMaskIntoConstraints = false
+        return uiTableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupViews()
+    }
+    
+    func setupViews() {
         title = "Table Gallery"
-        view.backgroundColor = .black
         
+        memeMeTableView.delegate = self
+        memeMeTableView.dataSource = self
+        memeMeTableView.register(MemeMeTableViewCell.self, forCellReuseIdentifier: MemeMeTableViewCell.identifier)
+
         navigationItem.rightBarButtonItem = createMemeButton
         navigationItem.rightBarButtonItem?.tintColor = .white
         navigationController?.navigationBar.barTintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
+        
+        view.addSubview(memeMeTableView)
+        
+        NSLayoutConstraint.activate([
+            memeMeTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
+            memeMeTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
+            memeMeTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0),
+            memeMeTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0)
+        ])
+
     }
     
     @objc func didPressCreateMemeButton(_ sender: UIBarButtonItem) {
         let memeMeMainViewController = MemeMeMainViewController()
         navigationController?.present(memeMeMainViewController, animated: true, completion: nil)
     }
+    
+    
+    // TableView Delegate Functions
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return memes.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let tableViewCell = memeMeTableView.dequeueReusableCell(withIdentifier: MemeMeTableViewCell.identifier, for: indexPath) as! MemeMeTableViewCell
+        let meme = self.memes[(indexPath as NSIndexPath).row]
+
+        
+        tableViewCell.memeImage.image = meme.originalImage
+        
+        return tableViewCell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController()
+        self.navigationController?.present(memeMeMemeDetailsViewController, animated: true, completion: nil)
+    }
+}
+
+
+class MemeMeTableViewCell: UITableViewCell {
+    static let identifier = "MemeMeTableViewCellIdentifier"
+    
+    let topMemeText: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.textColor = .white
+        uiLabel.numberOfLines = 0
+        return uiLabel
+    }()
+    
+    let bottomMemeText: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.textColor = .white
+        uiLabel.numberOfLines = 0
+        return uiLabel
+    }()
+    
+    var memeImage: UIImageView = {
+        let uiImage = UIImageView()
+        uiImage.translatesAutoresizingMaskIntoConstraints = false
+        uiImage.contentMode = .scaleAspectFill
+        uiImage.clipsToBounds = true
+        return uiImage
+    }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = .black
+        contentView.addSubview(memeImage)
+        
+        NSLayoutConstraint.activate([
+            memeImage.widthAnchor.constraint(equalToConstant: 150),
+            memeImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
+            memeImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10.0),
+            memeImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10.0)
+        ])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
