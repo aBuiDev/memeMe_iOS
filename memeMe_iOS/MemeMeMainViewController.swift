@@ -15,7 +15,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
         .strokeColor: UIColor.black,
         .foregroundColor: UIColor.white,
-        .font: UIFont(name: "HelveticaNeue-CondensedBlack", size:40)!,
+        .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
         .strokeWidth: -3.0
     ]
 

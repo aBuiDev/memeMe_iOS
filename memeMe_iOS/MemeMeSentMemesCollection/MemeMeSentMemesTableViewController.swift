@@ -31,6 +31,7 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate,
     private var memeMeTableView: UITableView = {
         let uiTableView = UITableView(frame: .zero)
         uiTableView.translatesAutoresizingMaskIntoConstraints = false
+        uiTableView.separatorColor = .white
         return uiTableView
     }()
     
@@ -77,8 +78,9 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate,
         let tableViewCell = memeMeTableView.dequeueReusableCell(withIdentifier: MemeMeTableViewCell.identifier, for: indexPath) as! MemeMeTableViewCell
         let meme = self.memes[(indexPath as NSIndexPath).row]
 
-        
         tableViewCell.memeImage.image = meme.originalImage
+        tableViewCell.topMemeText.text = meme.topText
+        tableViewCell.bottomMemeText.text = meme.bottomText
         
         return tableViewCell
     }
@@ -97,20 +99,31 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate,
 class MemeMeTableViewCell: UITableViewCell {
     static let identifier = "MemeMeTableViewCellIdentifier"
     
-    let topMemeText: UILabel = {
-        let uiLabel = UILabel()
-        uiLabel.translatesAutoresizingMaskIntoConstraints = false
-        uiLabel.textColor = .white
-        uiLabel.numberOfLines = 0
-        return uiLabel
+    lazy var topMemeText: UILabel = {
+        generateLabel()
     }()
     
-    let bottomMemeText: UILabel = {
+    lazy var bottomMemeText: UILabel = {
+        generateLabel()
+    }()
+    
+    private func generateLabel() -> UILabel {
         let uiLabel = UILabel()
         uiLabel.translatesAutoresizingMaskIntoConstraints = false
+        uiLabel.textAlignment = .center
         uiLabel.textColor = .white
+        uiLabel.font = UIFont(name: "HelveticaNeue-CondensedBlack", size: 20)
         uiLabel.numberOfLines = 0
         return uiLabel
+    }
+    
+    private let memeTableViewCellStackView: UIStackView = {
+        let uiStackView = UIStackView()
+        uiStackView.translatesAutoresizingMaskIntoConstraints = false
+        uiStackView.alignment = .center
+        uiStackView.axis = .vertical
+        uiStackView.distribution = .fillEqually
+        return uiStackView
     }()
     
     var memeImage: UIImageView = {
@@ -125,12 +138,22 @@ class MemeMeTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .black
         contentView.addSubview(memeImage)
-        
+        memeTableViewCellStackView.addArrangedSubview(topMemeText)
+        memeTableViewCellStackView.addArrangedSubview(bottomMemeText)
+        contentView.addSubview(memeTableViewCellStackView)
+
         NSLayoutConstraint.activate([
             memeImage.widthAnchor.constraint(equalToConstant: 150),
             memeImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
             memeImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10.0),
             memeImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10.0)
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeTableViewCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15.0),
+            memeTableViewCellStackView.leadingAnchor.constraint(equalTo: memeImage.trailingAnchor, constant: 5.0),
+            memeTableViewCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0),
+            memeTableViewCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15.0)
         ])
     }
     
