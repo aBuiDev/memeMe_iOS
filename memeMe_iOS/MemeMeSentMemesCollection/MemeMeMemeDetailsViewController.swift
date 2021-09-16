@@ -12,6 +12,12 @@ class MemeMeMemeDetailsViewController: UIViewController {
     
     var memeDetails: Meme
     
+    private var memeMeDetailsToolbar: UIToolbar = {
+        let uiToolbar = UIToolbar()
+        uiToolbar.translatesAutoresizingMaskIntoConstraints = false
+        return uiToolbar
+    }()
+    
     init(memeDetails: Meme) {
         self.memeDetails = memeDetails
         super.init(nibName: nil, bundle: nil)
@@ -23,7 +29,7 @@ class MemeMeMemeDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        view.backgroundColor = .black
         print(memeDetails.bottomText)
     }
 }
