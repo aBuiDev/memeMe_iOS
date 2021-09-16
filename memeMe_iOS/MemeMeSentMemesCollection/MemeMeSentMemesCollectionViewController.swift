@@ -109,7 +109,8 @@ class MemeMeSentMemesCollectionViewController: UIViewController, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController()
+        let meme = self.memes[(indexPath as NSIndexPath).row]
+        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController(memeDetails: meme)
         self.navigationController?.present(memeMeMemeDetailsViewController, animated: true, completion: nil)
     }
 }

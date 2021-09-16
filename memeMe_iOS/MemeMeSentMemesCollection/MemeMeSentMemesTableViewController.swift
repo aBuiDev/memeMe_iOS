@@ -90,7 +90,8 @@ class MemeMeSentMemesTableViewController: UIViewController, UITableViewDelegate,
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController()
+        let meme = self.memes[(indexPath as NSIndexPath).row]
+        let memeMeMemeDetailsViewController = MemeMeMemeDetailsViewController(memeDetails: meme)
         self.navigationController?.present(memeMeMemeDetailsViewController, animated: true, completion: nil)
     }
 }
