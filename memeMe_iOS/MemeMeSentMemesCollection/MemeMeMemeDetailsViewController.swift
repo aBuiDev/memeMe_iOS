@@ -20,6 +20,15 @@ class MemeMeMemeDetailsViewController: UIViewController {
         return uiToolbar
     }()
     
+    private var memeMeDetailsToolbarCloseButton: UIButton = {
+        let uiButton = UIButton()
+        uiButton.translatesAutoresizingMaskIntoConstraints = false
+        uiButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        uiButton.tintColor = .white
+        uiButton.addTarget(self, action: #selector(didPressCloseButton), for: .touchUpInside)
+        return uiButton
+    }()
+    
     private lazy var memeTopLabel: UILabel = {
         createMemeUILabel()
     }()
@@ -38,10 +47,14 @@ class MemeMeMemeDetailsViewController: UIViewController {
         return uiLabel
     }
     
+    @objc func didPressCloseButton(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     private var memeImageOriginal: UIImageView = {
         let uiImageView = UIImageView()
         uiImageView.translatesAutoresizingMaskIntoConstraints = false
-        uiImageView.backgroundColor = .red
+        uiImageView.backgroundColor = .black
         uiImageView.contentMode = .scaleAspectFit
         return uiImageView
     }()
@@ -60,9 +73,14 @@ class MemeMeMemeDetailsViewController: UIViewController {
         view.backgroundColor = .black
         
         memeTopLabel.text = memeDetails.topText
+        memeImageOriginal.image = memeDetails.originalImage
+        memeBottomLabel.text = memeDetails.bottomText
         
         // Details Toolbar
         view.addSubview(memeMeDetailsToolbar)
+        memeMeDetailsToolbar.addSubview(memeMeDetailsToolbarCloseButton)
+        
+        // Meme Elements
         view.addSubview(memeTopLabel)
         view.addSubview(memeImageOriginal)
         view.addSubview(memeBottomLabel)
@@ -76,10 +94,29 @@ class MemeMeMemeDetailsViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
+            memeMeDetailsToolbarCloseButton.centerYAnchor.constraint(equalTo: memeMeDetailsToolbar.centerYAnchor),
+            memeMeDetailsToolbarCloseButton.trailingAnchor.constraint(equalTo: memeMeDetailsToolbar.trailingAnchor, constant: -25.0)
+        ])
+        
+        NSLayoutConstraint.activate([
             memeTopLabel.topAnchor.constraint(equalTo: memeMeDetailsToolbar.bottomAnchor, constant: 25.0),
             memeTopLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10.0),
             memeTopLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -10.0),
             memeTopLabel.heightAnchor.constraint(equalToConstant: 50.0)
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeImageOriginal.topAnchor.constraint(equalTo: memeTopLabel.bottomAnchor, constant: 0.0),
+            memeImageOriginal.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
+            memeImageOriginal.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0),
+            memeImageOriginal.bottomAnchor.constraint(equalTo: memeBottomLabel.topAnchor, constant: 0.0)
+        ])
+        
+        NSLayoutConstraint.activate([
+            memeBottomLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10.0),
+            memeBottomLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -10.0),
+            memeBottomLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25.0),
+            memeBottomLabel.heightAnchor.constraint(equalToConstant: 50.0)
         ])
     }
 }
