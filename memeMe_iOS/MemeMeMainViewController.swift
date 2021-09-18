@@ -39,24 +39,26 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         return uiToolbar
     }()
     
-    private var memeCreateTopToolbarCancelButton: UIButton = {
-        let uiButton = UIButton()
-        uiButton.translatesAutoresizingMaskIntoConstraints = false
-        uiButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        uiButton.tintColor = .white
-        uiButton.addTarget(self, action: #selector(didPressCancelCreateMemeButton), for: .touchUpInside)
-        return uiButton
+    /// Toolbar Buttons
+    private lazy var memeCreateTopToolbarCancelButton: UIButton = {
+        createMemeMeToolbarBarButton(imageName: "xmark", isEnabled: true)
     }()
     
-    private var memeCreateTopToolbarShareButton: UIButton = {
-        let uiButton = UIButton()
-        uiButton.translatesAutoresizingMaskIntoConstraints = false
-        uiButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
-        uiButton.tintColor = .white
-        uiButton.isEnabled = false
-        return uiButton
+    private lazy var memeCreateTopToolbarShareButton: UIButton = {
+        createMemeMeToolbarBarButton(imageName: "square.and.arrow.up", isEnabled: false)
     }()
     
+    /// Toolbar Button Creator
+    private func createMemeMeToolbarBarButton(imageName: String, isEnabled: Bool) -> UIButton {
+        let uiButton = UIButton()
+        uiButton.translatesAutoresizingMaskIntoConstraints = false
+        uiButton.setImage(UIImage(systemName: imageName), for: .normal)
+        uiButton.tintColor = .white
+        uiButton.isEnabled = isEnabled
+        return uiButton
+    }
+    
+    /// Toolbar Title
     private var memeMeCreateTitleLabel: UILabel = {
         let uiLabel = UILabel()
         uiLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -119,11 +121,11 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     
     // MARK: Text Fields
-    internal lazy var topTextField: UITextField = {
+    private lazy var topTextField: UITextField = {
         generateTextField()
     }()
     
-    internal lazy var bottomTextField: UITextField = {
+    private lazy var bottomTextField: UITextField = {
         generateTextField()
     }()
     
@@ -141,6 +143,8 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     // MARK: Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        memeCreateTopToolbarCancelButton.addTarget(self, action: #selector(didPressCancelCreateMemeButton), for: .touchUpInside)
         
         // Delegates
         topTextField.delegate = topTextFieldDelegate
@@ -354,7 +358,6 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     
     func subscribeToKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func unsubscribeToKeyboardNotifications() {
@@ -367,9 +370,8 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     func generateMemedImage() -> UIImage {
 
         // Hide Toolbar
-        memeTopToolbar.isHidden = true
-        memeToolbar.isHidden = true
-    
+        hideAndShowBars(true, true)
+
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
@@ -377,11 +379,17 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         UIGraphicsEndImageContext()
 
         // Unhide Toobar
-        memeTopToolbar.isHidden = false
-        memeToolbar.isHidden = false
+        hideAndShowBars(false, false)
 
         return memedImage
     }
+    
+    func hideAndShowBars(_ memeTopToolbarIsHidden: Bool, _ memeToolbarIsHidden: Bool) {
+        memeTopToolbar.isHidden = memeTopToolbarIsHidden
+        memeToolbar.isHidden = memeToolbarIsHidden
+    }
+    
+    
     
     // MARK: Cancelling Meme Creation
     @objc func didPressCancelCreateMemeButton() {
