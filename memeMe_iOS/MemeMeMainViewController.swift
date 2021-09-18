@@ -9,17 +9,21 @@ import UIKit
 
 class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
     
+    // MARK: Initialise Delegates
     let topTextFieldDelegate = MemeMeTextFieldDelegate()
     let bottomTextFieldDelegate = MemeMeTextFieldDelegate()
     
+    /// MemeText Attributes
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
         .strokeColor: UIColor.black,
         .foregroundColor: UIColor.white,
         .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
         .strokeWidth: -3.0
     ]
-
-    // MemeMe Image View
+    
+    
+    
+    // MARK: MemeMe Image View
     private var imageDisplayView: UIImageView = {
         let uiImageView = UIImageView()
         uiImageView.translatesAutoresizingMaskIntoConstraints = false
