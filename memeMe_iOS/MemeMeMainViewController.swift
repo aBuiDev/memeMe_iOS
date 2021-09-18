@@ -83,47 +83,31 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     }()
     
     private lazy var memeToolbarImagePickerButton: UIBarButtonItem = {
-        let uiBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "photo.on.rectangle"),
-            style: .plain,
-            target: self,
-            action: #selector(didSelectImagePickerButton(_ :))
-        )
-        uiBarButtonItem.tintColor = .white
-        uiBarButtonItem.isEnabled = true
-        return uiBarButtonItem
+        createToolBarButtons(image: "photo.on.rectangle", isEnabled: true)
     }()
 
-    private var memeToolbarSaveButton: UIBarButtonItem = {
-        let uiBarButtonItem = UIBarButtonItem(
-            title: "Save",
-            style: .plain,
-            target: self,
-            action: #selector(didPressSaveButton)
-        )
-        uiBarButtonItem.tintColor = .white
-        uiBarButtonItem.isEnabled = false
-        return uiBarButtonItem
+    private lazy var memeToolbarSaveButton: UIBarButtonItem = {
+        createToolBarButtons(image: "square.and.arrow.down.on.square", isEnabled: false)
     }()
     
-    private var memeToolbarCameraButton: UIBarButtonItem = {
-        let uiBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "camera"),
-            style: .plain,
-            target: self,
-            action: #selector(didSelectImagePickerButton(_ :))
-        )
-        uiBarButtonItem.tintColor = .white
-        uiBarButtonItem.isEnabled = true
-        uiBarButtonItem.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
-        return uiBarButtonItem
+    private lazy var memeToolbarCameraButton: UIBarButtonItem = {
+        createToolBarButtons(image: "camera", isEnabled: UIImagePickerController.isSourceTypeAvailable(.camera))
     }()
+    
+    func createToolBarButtons(image: String, isEnabled: Bool) -> UIBarButtonItem {
+        let uiBarButtonItem = UIBarButtonItem()
+        uiBarButtonItem.image = UIImage(systemName: image)
+        uiBarButtonItem.style = .plain
+        uiBarButtonItem.target = self
+        uiBarButtonItem.tintColor = .white
+        uiBarButtonItem.isEnabled = isEnabled
+        return uiBarButtonItem
+    }
     
     private let memeToolbarFlexibleSpacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
-    
-    
-    
+
+
     // MARK: Text Fields
     private lazy var topTextField: UITextField = {
         generateTextField()
@@ -148,6 +132,9 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        memeToolbarImagePickerButton.action = #selector(didSelectImagePickerButton(_ :))
+        memeToolbarSaveButton.action = #selector(didPressSaveButton)
+        memeToolbarCameraButton.action = #selector(didSelectImagePickerButton(_ :))
         memeCreateTopToolbarCancelButton.addTarget(self, action: #selector(didPressCancelCreateMemeButton), for: .touchUpInside)
         
         // Delegates
