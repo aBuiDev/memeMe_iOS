@@ -223,6 +223,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         ])
     }
     
+    /// Notifcation Observers
     override func viewWillAppear(_ animated: Bool) {
         subscribeToKeyboardNotifications()
     }
@@ -261,6 +262,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         print("\(meme.topText) \(meme.bottomText) saved to storage...")
     }
     
+    /// Did Select Image Picker
     @objc func didSelectImagePickerButton(_ sender: UIBarButtonItem) {
         guard let buttonImage = sender.image else { return }
         let imagePicker = UIImagePickerController()
@@ -274,6 +276,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         present(imagePicker, animated: true, completion: nil)
     }
     
+    /// Toolbar Setup Bar Button Item Layout
     func setupToolbarItems() -> [UIBarButtonItem] {
         var uiBarButtonItems: [UIBarButtonItem] = []
         uiBarButtonItems.append(memeToolbarFlexibleSpacer)
@@ -360,6 +363,7 @@ class MemeMeMainViewController: UIViewController, UIImagePickerControllerDelegat
         return keyboardSize.cgRectValue.height
     }
     
+    /// NotificationCenter Keyboard Observers
     func subscribeToKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
